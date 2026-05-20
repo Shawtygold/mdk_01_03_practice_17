@@ -13,15 +13,16 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.notesmylnikov.R;
+import com.example.notesmylnikov.datas.NotesContext;
 import com.example.notesmylnikov.datas.RepoNotes;
 import com.example.notesmylnikov.domains.models.Note;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 
 public class NoteActivity extends AppCompatActivity {
 
-//    RepoNotes notesRepository;
     Note note;
     EditText etTitle, etText;
     TextView tvDate;
@@ -32,8 +33,6 @@ public class NoteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_note);
-
-//        notesRepository = new RepoNotes(this);
 
         Date DateNow = new Date();
         SimpleDateFormat FormatForDateNow = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy");
@@ -47,8 +46,9 @@ public class NoteActivity extends AppCompatActivity {
 
         Bundle arguments = getIntent().getExtras();
         if (arguments != null){
-            String noteIdentificator = arguments.getString("data");
-            note = notesRepository.getNote(noteIdentificator);
+            Integer noteIdentificator = arguments.getInt("note_id");
+            Optional<Note> note_opt = NotesContext.AllNotes().stream().filter(n -> n.id == noteIdentificator).findFirst();
+            note = note_opt.orElseThrow();
 
             etTitle.setText(note.title);
             etText.setText(note.text);
@@ -74,42 +74,22 @@ public class NoteActivity extends AppCompatActivity {
                 Toast.makeText(this, "Нечего сохранять", Toast.LENGTH_SHORT).show();
             } else{
                 if (note == null){
-                    note = new Note(notesRepository.getNewId(), Title, Text, FormatForDateNow.format(DateNow), "Black");
+                    note = new Note(Title, Text, FormatForDateNow.format(DateNow), "Black");
+                    NotesContext.Save(note, false);
                 }
                 else{
                     note = new Note(note.id, Title, Text, FormatForDateNow.format(DateNow), "Black");
+                    NotesContext.Save(note, true);
                 }
-
-                notesRepository.saveNote(note);
             }
 
             finish();
         });
 
         btnTrash.setOnClickListener(v -> {
-            notesRepository.deleteNote(note.id);
+            NotesContext.Delete(note.id);
             finish();
             Toast.makeText(this, "Заметка удалена", Toast.LENGTH_SHORT).show();
         });
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
     }
-
-//    public void onColorPickerClick(View view){
-//        ColorPickerDialog.Builder builder = new ColorPickerDialog.Builder(this);
-//        builder.setTitle("Выберите цвет")
-//                .setPositiveButton("OK", (colorPickerView, color) -> {
-//                    // Использовать выбранный цвет
-//                    int selectedColor = color;
-//                    view.setBackgroundColor(selectedColor);
-//                })
-//                .setNegativeButton("Отмена", (colorPickerView, color) -> {
-//                    // Отмена
-//                })
-//                .show();
-//    }
 }

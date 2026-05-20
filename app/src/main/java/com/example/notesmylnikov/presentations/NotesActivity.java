@@ -37,19 +37,15 @@ public class NotesActivity extends AppCompatActivity {
     GridLayout itemsParent;
     View btnAddNotes;
     EditText etSearch;
-//    RepoNotes notesRepository;
     ArrayList<Note> notes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_notes);
 
         dbContext = new DbContext(this);
-        LoadNotes(NotesContext.AllNotes());
 
-        //notesRepository = new RepoNotes(this);
         notes = new ArrayList<>();
 
         btnAddNotes = findViewById(R.id.btn_add_notes);
@@ -63,13 +59,7 @@ public class NotesActivity extends AppCompatActivity {
 
         etSearch.setOnKeyListener(SearchListener);
 
-        LoadNotes();
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        LoadNotes(NotesContext.AllNotes());
     }
 
     @Override
@@ -79,63 +69,63 @@ public class NotesActivity extends AppCompatActivity {
         LoadNotes(NotesContext.AllNotes());
     }
 
-    public void LoadNotes2(ArrayList<Note> notes){
+    public void LoadNotes(ArrayList<Note> notes){
         itemsParent.removeAllViews();
 
         for (int i = 0; i < notes.size(); i++){
-            View item_notes = LayoutInflater.from(this).inflate(R.layout.item_note, itemsParent, false);
-
-            TextView tvTitle = item_notes.findViewById(R.id.tv_title);
-            TextView tvText = item_notes.findViewById(R.id.tv_text);
-            TextView tvDate = item_notes.findViewById(R.id.tv_date);
-
             Note note = notes.get(i);
+            View item_note = LayoutInflater.from(this).inflate(R.layout.item_note, itemsParent, false);
+
+            TextView tvTitle = item_note.findViewById(R.id.tv_title);
+            TextView tvText = item_note.findViewById(R.id.tv_text);
+            TextView tvDate = item_note.findViewById(R.id.tv_date);
+
             tvTitle.setText(note.title);
             tvText.setText(note.text);
             tvDate.setText(note.date);
 
-            item_notes.setOnClickListener(v -> {
+            item_note.setOnClickListener(v -> {
                 Intent intentActivityNote = new Intent(this, NoteActivity.class);
-                intentActivityNote.putExtra("data", "note_" + note.id + "_data");
+                intentActivityNote.putExtra("note_id", note.id);
                 startActivity(intentActivityNote);
             });
 
-            itemsParent.addView(item_notes);
+            itemsParent.addView(item_note);
         }
     }
 
-    public void LoadNotes(){
-        itemsParent.removeAllViews();
-        notes.clear();
-        Set<String> allNotesIds = notesRepository.getAllNotesIds();
-
-        for (String noteIdentificationString : allNotesIds){
-            if (Objects.equals(noteIdentificationString, "note_count"))
-                continue;
-
-            View item_notes = LayoutInflater.from(this).inflate(R.layout.item_note, itemsParent, false);
-
-            TextView tvTitle = item_notes.findViewById(R.id.tv_title);
-            TextView tvText = item_notes.findViewById(R.id.tv_text);
-            TextView tvDate = item_notes.findViewById(R.id.tv_date);
-
-            Note note = notesRepository.getNote(noteIdentificationString);
-            tvTitle.setText(note.title);
-            tvText.setText(note.text);
-            tvDate.setText(note.date);
-
-            notes.add(note);
-
-            item_notes.setOnClickListener(v -> {
-                Intent intentActivityNote = new Intent(this, NoteActivity.class);
-                intentActivityNote.putExtra("data", noteIdentificationString);
-                startActivity(intentActivityNote);
-                etSearch.setText("");
-            });
-
-            itemsParent.addView(item_notes);
-        }
-    }
+//    public void LoadNotes(){
+//        itemsParent.removeAllViews();
+//        notes.clear();
+//        Set<String> allNotesIds = notesRepository.getAllNotesIds();
+//
+//        for (String noteIdentificationString : allNotesIds){
+//            if (Objects.equals(noteIdentificationString, "note_count"))
+//                continue;
+//
+//            View item_notes = LayoutInflater.from(this).inflate(R.layout.item_note, itemsParent, false);
+//
+//            TextView tvTitle = item_notes.findViewById(R.id.tv_title);
+//            TextView tvText = item_notes.findViewById(R.id.tv_text);
+//            TextView tvDate = item_notes.findViewById(R.id.tv_date);
+//
+//            Note note = notesRepository.getNote(noteIdentificationString);
+//            tvTitle.setText(note.title);
+//            tvText.setText(note.text);
+//            tvDate.setText(note.date);
+//
+//            notes.add(note);
+//
+//            item_notes.setOnClickListener(v -> {
+//                Intent intentActivityNote = new Intent(this, NoteActivity.class);
+//                intentActivityNote.putExtra("data", noteIdentificationString);
+//                startActivity(intentActivityNote);
+//                etSearch.setText("");
+//            });
+//
+//            itemsParent.addView(item_notes);
+//        }
+//    }
 
 
 
@@ -165,7 +155,7 @@ public class NotesActivity extends AppCompatActivity {
 //                }
 //            }
 //    itemsParent.removeAllViews();
-            LoadNotes2(FindNotes);
+            LoadNotes(FindNotes);
 
             return false;
         }

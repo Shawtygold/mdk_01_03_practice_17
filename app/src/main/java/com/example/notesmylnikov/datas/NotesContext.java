@@ -47,7 +47,7 @@ public class NotesContext {
         }
     }
 
-    public static void Delete(Note note){
-        DbContext.sqLiteDatabase.delete("Notes", "Id = ?", new String[] {String.valueOf(note.id)});
+    public static void Delete(Integer noteId){
+        DbContext.sqLiteDatabase.delete("Notes", "Id = ?", new String[] {String.valueOf(noteId)});
     }
 }

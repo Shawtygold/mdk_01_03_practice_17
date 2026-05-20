@@ -10,6 +10,13 @@ public class Note {
     public Note(){
 
     }
+
+    public Note (String title, String text, String date, String color){
+        this.title = title;
+        this.text = text;
+        this.date = date;
+        this.color = color;
+    }
     public Note (int _id, String _title, String _text, String _date, String _color){
         id = _id;
         title = _title;

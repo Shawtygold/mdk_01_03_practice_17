@@ -17,6 +17,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.notesmylnikov.R;
+import com.example.notesmylnikov.datas.DbContext;
+import com.example.notesmylnikov.datas.NotesContext;
 import com.example.notesmylnikov.datas.RepoNotes;
 import com.example.notesmylnikov.domains.models.Note;
 
@@ -31,10 +33,11 @@ import java.util.stream.Collectors;
 
 public class NotesActivity extends AppCompatActivity {
 
+    DbContext dbContext;
     GridLayout itemsParent;
     View btnAddNotes;
     EditText etSearch;
-    RepoNotes notesRepository;
+//    RepoNotes notesRepository;
     ArrayList<Note> notes;
 
     @Override
@@ -43,7 +46,10 @@ public class NotesActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_notes);
 
-        notesRepository = new RepoNotes(this);
+        dbContext = new DbContext(this);
+        LoadNotes(NotesContext.AllNotes());
+
+        //notesRepository = new RepoNotes(this);
         notes = new ArrayList<>();
 
         btnAddNotes = findViewById(R.id.btn_add_notes);
@@ -70,7 +76,7 @@ public class NotesActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
         etSearch.setText("");
-        LoadNotes();
+        LoadNotes(NotesContext.AllNotes());
     }
 
     public void LoadNotes2(ArrayList<Note> notes){
@@ -142,11 +148,11 @@ public class NotesActivity extends AppCompatActivity {
                     .replace("\r", "")
                     .replace("\n", "")
                     .isEmpty()) {
-                LoadNotes();
+                LoadNotes(NotesContext.AllNotes());
                 return false;
             }
 
-            ArrayList<Note> FindNotes = notes.stream().filter(
+            ArrayList<Note> FindNotes = NotesContext.AllNotes().stream().filter(
                     item -> item.text.contains(Search)
             ).collect(Collectors.toCollection(ArrayList::new));
 

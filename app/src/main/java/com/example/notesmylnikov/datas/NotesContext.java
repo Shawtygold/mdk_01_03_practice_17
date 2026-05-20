@@ -8,7 +8,7 @@ import com.example.notesmylnikov.domains.models.Note;
 import java.util.ArrayList;
 
 public class NotesContext {
-    public static ArrayList<Note> ALlNotes(){
+    public static ArrayList<Note> AllNotes(){
         ArrayList<Note> allNotes = new ArrayList<>();
         Cursor cursor = DbContext.sqLiteDatabase.query("Notes", null, null, null, null, null, null);
         if (cursor.moveToFirst() == false){
